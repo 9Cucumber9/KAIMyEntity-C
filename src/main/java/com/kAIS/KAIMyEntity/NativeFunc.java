@@ -11,15 +11,19 @@ import java.util.HashMap;
 
 public class NativeFunc {
     private static final String RuntimePath = new File(System.getProperty("java.home")).getParent();
+    private static final String JavaHome = new File(System.getProperty("java.home")).getPath();
     private static final String gameDirectory = MinecraftClient.getInstance().runDirectory.getAbsolutePath();
     private static final boolean isAndroid = new File("/system/build.prop").exists();
+    private static final boolean isAMD64 = System.getProperty("os.arch").toLowerCase().contains("amd64");
     private static final boolean isLinux = System.getProperty("os.name").toLowerCase().contains("linux");
     private static final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("windows");
     private static final HashMap<runtimeUrlRes, String> urlMap = new HashMap<runtimeUrlRes, String>() {
         {
             put(runtimeUrlRes.windows, "https://github.com/Gengorou-C/KAIMyEntitySaba/releases/download/20221215/KAIMyEntitySaba.dll");
-            put(runtimeUrlRes.android_arch64, "https://github.com.cnpmjs.org/asuka-mio/KAIMyEntitySaba/releases/download/crossplatform/KAIMyEntitySaba.so");
-            put(runtimeUrlRes.android_arch64_libc, "https://github.com.cnpmjs.org/asuka-mio/KAIMyEntitySaba/releases/download/crossplatform/libc++_shared.so");
+            put(runtimeUrlRes.android_arch64, "https://github.com/9Cucumber9/KAIMyEntitySaba/releases/download/v1.0/KAIMyEntitySaba_aarch64.so");
+            put(runtimeUrlRes.android_arch64_libc, "https://github.com/9Cucumber9/KAIMyEntitySaba/releases/download/v1.0/libc++_shared_aarch64.so");
+            put(runtimeUrlRes.android_amd64, "https://github.com/9Cucumber9/KAIMyEntitySaba/releases/download/v1.0/KAIMyEntitySaba_amd64.so");
+            put(runtimeUrlRes.android_amd64_libc, "https://github.com/9Cucumber9/KAIMyEntitySaba/releases/download/v1.0/libc++_shared_amd64.so");
         }
     };
     static NativeFunc inst;
@@ -64,9 +68,13 @@ public class NativeFunc {
             KAIMyEntityClient.logger.info("Not support!");
             throw new Error();
         }
-        if (isLinux && isAndroid) {
-            DownloadSingleFile(new URL(urlMap.get(runtimeUrlRes.android_arch64_libc)), new File(RuntimePath, "libc++_shared.so"));
-            DownloadSingleFile(new URL(urlMap.get(runtimeUrlRes.android_arch64)), new File(RuntimePath, "KAIMyEntitySaba.so"));
+        if (isLinux && isAndroid && isAMD64) {
+            DownloadSingleFile(new URL(urlMap.get(runtimeUrlRes.android_amd64_libc)), new File(JavaHome+"/lib", "libc++_shared.so"));
+            DownloadSingleFile(new URL(urlMap.get(runtimeUrlRes.android_amd64)), new File(JavaHome+"/lib", "KAIMyEntitySaba.so"));
+        }
+        if (isLinux && isAndroid && !isAMD64) {
+            DownloadSingleFile(new URL(urlMap.get(runtimeUrlRes.android_arch64_libc)), new File(JavaHome+"/lib", "libc++_shared.so"));
+            DownloadSingleFile(new URL(urlMap.get(runtimeUrlRes.android_arch64)), new File(JavaHome+"/lib", "KAIMyEntitySaba.so"));
         }
     }
 
@@ -91,8 +99,8 @@ public class NativeFunc {
             }
             if (isLinux && isAndroid) {
                 KAIMyEntityClient.logger.info("Android Env Detected!");
-                LoadLibrary(new File(RuntimePath, "libc++_shared.so"));
-                LoadLibrary(new File(RuntimePath, "KAIMyEntitySaba.so"));//Android
+                LoadLibrary(new File(JavaHome+"/lib", "libc++_shared.so"));
+                LoadLibrary(new File(JavaHome+"/lib", "KAIMyEntitySaba.so"));//Android
             }
         } catch (Error e) {
             try {
@@ -202,6 +210,6 @@ public class NativeFunc {
     public native void DeleteAnimation(long anim);
 
     enum runtimeUrlRes {
-        windows,android_arch64, android_arch64_libc
+        windows, android_arch64, android_arch64_libc, android_amd64, android_amd64_libc
     }
 }
