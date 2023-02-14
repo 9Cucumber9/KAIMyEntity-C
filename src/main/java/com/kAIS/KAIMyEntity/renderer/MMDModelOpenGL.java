@@ -76,7 +76,8 @@ public class MMDModelOpenGL implements IMMDModel {
     public static void InitShader() {
         //Init Shader
         ShaderProvider.Init();
-        MMDShaderProgram = ShaderProvider.getProgram();
+        //MMDShaderProgram = ShaderProvider.getProgram();
+        MMDShaderProgram = -1;
         isShaderInited = true;
     }
 
@@ -257,15 +258,9 @@ public class MMDModelOpenGL implements IMMDModel {
         deliverStack.multiply(new Quaternionf().rotateX(entityPitch*((float)Math.PI / 180F)));
         deliverStack.scale(0.09f, 0.09f, 0.09f);
         
-        if(KAIMyEntityClient.usingMMDShader == 0){
-            shaderProgram = RenderSystem.getShader().getGlRef();
-            setUniforms(RenderSystem.getShader(), deliverStack);
-            RenderSystem.getShader().bind();
-        }
-        if(KAIMyEntityClient.usingMMDShader == 1){
-            shaderProgram = MMDShaderProgram;
-            GlStateManager._glUseProgram(shaderProgram);
-        }
+        shaderProgram = RenderSystem.getShader().getGlRef();
+        setUniforms(RenderSystem.getShader(), deliverStack);
+        RenderSystem.getShader().bind();
         
         updateLocation(shaderProgram);
 
