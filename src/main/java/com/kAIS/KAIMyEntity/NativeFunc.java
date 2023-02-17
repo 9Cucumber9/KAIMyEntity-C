@@ -12,7 +12,7 @@ import java.util.HashMap;
 public class NativeFunc {
     private static final String RuntimePath = new File(System.getProperty("java.home")).getParent();
     private static final String JavaHome = new File(System.getProperty("java.home")).getPath();
-    private static final String gameDirectory = Minecraft.getInstance().runDirectory.getAbsolutePath();
+    private static final String gameDirectory = Minecraft.getInstance().gameDirectory.getAbsolutePath();
     private static final boolean isAndroid = new File("/system/build.prop").exists();
     private static final boolean isAMD64 = System.getProperty("os.arch").toLowerCase().contains("amd64");
     private static final boolean isLinux = System.getProperty("os.name").toLowerCase().contains("linux");
